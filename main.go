@@ -2,29 +2,32 @@ package main
 
 import (
 	"centralserver/controllers"
+	"centralserver/data"
+	// "centralserver/middleware"
 	"fmt"
 	"log"
 	"net/http"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
 func main() {
-	DB, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("files.db"), &gorm.Config{})
 	if err != nil {
-    panic("failed to connect database")
-  }
+		panic("failed to connect database")
+	}
+	db.AutoMigrate(&data.Handlelingauthetication{})
+	server := http.NewServeMux()
 
-	server:=http.NewServeMux()
-	
-	server.HandleFunc("/post",controllers.Handleautth)
-	fs:=http.FileServer(http.Dir("./Public"))
-	server.Handle("/",fs)
+	server.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		controllers.Handleautth(db, w, r)
+	})
+	// server.HandleFunc("/download", middleware.JWTMiddleware(controllers.Handledownload))
 
-    erro := http.ListenAndServe(":8081", server)
-    if erro != nil {
+	erro := http.ListenAndServe(":8081", server)
+	if erro != nil {
 		log.Fatal(erro)
-    }
+	}
 	defer fmt.Println("Program exited")
 }
