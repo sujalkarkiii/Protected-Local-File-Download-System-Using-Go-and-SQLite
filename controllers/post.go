@@ -16,17 +16,12 @@ import (
 func Handleautth(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	jwtSecret := []byte(os.Getenv("JWT_SECRET"))
 
-	if r.Method == http.MethodPost && r.Header.Get("Content-Type") == "application/json" {
+	if r.Method == http.MethodPost {
 		var User data.Handlelingauthetication
+		Department := r.FormValue("Department")
+		RollNo := r.FormValue("RollNo")
 
-		err := json.NewDecoder(r.Body).Decode(&User)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		var thereis_theuserofthis data.Handlelingauthetication
-		res := db.Where("roll_no = ? AND department = ?", User.RollNo, User.Department).First(&thereis_theuserofthis)
+		res := db.Where("roll_no = ? AND department = ?", RollNo, Department).First(&User)
 		if res.Error != nil {
 			if res.Error == gorm.ErrRecordNotFound {
 				fmt.Println("User not found")
@@ -40,8 +35,8 @@ func Handleautth(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"roll_no":    thereis_theuserofthis.RollNo,
-			"department": thereis_theuserofthis.Department,
+			"roll_no":    User.RollNo,
+			"department": User.Department,
 			"exp":        time.Now().Add(time.Hour).Unix(), // expires in 1 hour
 		})
 

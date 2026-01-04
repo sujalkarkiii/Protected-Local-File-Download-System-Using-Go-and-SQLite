@@ -2,7 +2,6 @@ package controllers
 
 // import (
 // 	"net/http"
-// 	"path/filepath"
 // )
 
 // func Handledownload(w http.ResponseWriter, r *http.Request)  {

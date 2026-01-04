@@ -19,6 +19,8 @@ func main() {
 	}
 	db.AutoMigrate(&data.Handlelingauthetication{})
 	server := http.NewServeMux()
+	fs := http.FileServer(http.Dir("./Public"))
+	server.Handle("/", fs)
 
 	server.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		controllers.Handleautth(db, w, r)
@@ -29,5 +31,7 @@ func main() {
 	if erro != nil {
 		log.Fatal(erro)
 	}
+		fmt.Println("Server running on http://localhost:8081")
+
 	defer fmt.Println("Program exited")
 }
