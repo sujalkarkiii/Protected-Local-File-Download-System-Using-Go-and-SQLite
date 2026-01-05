@@ -3,47 +3,60 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local File Downloading</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <h2>Enter your UDitya+sonu</h2>
-    <form id="loginform">
-        <label for="rollnumber">Roll Number:</label>
-        <input type="text" id="rollnumber" name="rollnumber" required><br><br>
+<body class="bg-gray-50 flex items-center justify-center h-screen">
 
-        <label for="department">Department:</label>
-        <input type="text" id="department" name="department" required><br><br>
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-semibold text-center mb-6 text-gray-800">Enter your Details</h2>
+        <form id="loginform" class="space-y-4">
+            <div>
+                <label for="rollnumber" class="block text-gray-700">Roll Number:</label>
+                <input type="text" id="rollnumber" name="rollnumber" required
+                    class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400">
+            </div>
 
-        <input type="submit" value="Submit">
-    </form>
+            <div>
+                <label for="department" class="block text-gray-700">Department:</label>
+                <input type="text" id="department" name="department" required
+                    class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400">
+            </div>
 
-<script>
+            <input type="submit" value="Submit"
+                class="w-full bg-gray-700 text-white font-medium py-2 rounded-lg hover:bg-gray-800 cursor-pointer">
+        </form>
+    </div>
 
-    const form = document.getElementById('loginform');
+    <script>
+        const form = document.getElementById('loginform');
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        const RollNo = document.getElementById("rollnumber").value;
-        const Department = document.getElementById("department").value;
+            const RollNo = document.getElementById("rollnumber").value;
+            const Department = document.getElementById("department").value;
 
-        const res = await fetch("/login", {
-            method: "POST",
-            credentials: "include",   
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: `RollNo=${encodeURIComponent(RollNo)}&Department=${encodeURIComponent(Department)}`
+            const res = await fetch("/login", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `RollNo=${encodeURIComponent(RollNo)}&Department=${encodeURIComponent(Department)}`
+            });
+
+            if (res.ok) {
+                window.location.href = "/files";
+            } else {
+                alert("Login failed");
+            }
         });
-
-        if (res.ok) {
-            window.location.href = "/files";
-        } else {
-            alert("Login failed");
-        }
-    });
-</script>
+    </script>
 </body>
 
 </html>
