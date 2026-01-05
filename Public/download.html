@@ -1,11 +1,52 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download page</title>
 </head>
+
 <body>
-    
+    <p>This is the Download page. Choose what you want to download:</p>
+    <ul id="list_of_books"></ul>
+
+    <script>
+        const loaddata = async () => {
+            try {
+                const res = await fetch("/api/files", {
+                    credentials: "include"
+
+                }); // cookie sent automatically
+
+                console.log(res.ok)
+                if (!res.ok) {
+                    alert("Unauthorized! Please log in again.");
+                    window.location.href = "/";
+                    return;
+                }
+
+                const data = await res.json();
+                const listContainer = document.getElementById("list_of_books");
+
+                if (data.length === 0) {
+                    listContainer.innerHTML = "<li>No files available for download.</li>";
+                    return;
+                }
+
+                listContainer.innerHTML = data.map(file => {
+                    const url = `/download?file=${encodeURIComponent(file.filename)}`;
+                    return `<li><a href="${url}" download>${file.filename}</a></li>`;
+                }).join("");
+
+            } catch (err) {
+                console.error("Error fetching files:", err);
+                alert("Failed to load files.");
+            }
+        };
+
+        loaddata();
+    </script>
 </body>
-</html> -->
+
+</html>

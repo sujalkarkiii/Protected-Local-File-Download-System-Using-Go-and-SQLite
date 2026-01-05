@@ -7,3 +7,7 @@ type Handlelingauthetication struct{
 	RollNo int16
 	Department string
 }
+
+type File struct {
+	Filename string `json:"filename"`
+}

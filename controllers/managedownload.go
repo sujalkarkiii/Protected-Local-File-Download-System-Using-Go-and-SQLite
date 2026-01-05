@@ -1,14 +1,29 @@
 package controllers
 
-// import (
-// 	"net/http"
-// )
+import (
+	"fmt"
+	"net/http"
+	"path/filepath"
+)
 
-// func Handledownload(w http.ResponseWriter, r *http.Request)  {
-// 	filepath:="./readingmaterials"
-// 		w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
-// 	w.Header().Set("Content-Type", "application/octet-stream")
+func HandleDownload(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
-// 	// Serve the file
-// 	http.ServeFile(w, r, filePath)
-// }
+	fileName := r.URL.Query().Get("file")
+	if fileName == "" {
+		http.Error(w, "File not specified", http.StatusBadRequest)
+		return
+	}
+
+	fileName = filepath.Base(fileName)
+	filePath := filepath.Join("./readingmatrials", fileName)
+
+
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, fileName))
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	http.ServeFile(w, r, filePath)
+}

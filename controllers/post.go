@@ -34,28 +34,33 @@ func Handleautth(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"roll_no":    User.RollNo,
-			"department": User.Department,
-			"exp":        time.Now().Add(time.Hour).Unix(), // expires in 1 hour
-		})
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"roll_no":    User.RollNo,
+		"department": User.Department,
+		"exp":        time.Now().Add(time.Hour).Unix(),
+	})
 
-		tokenString, err := token.SignedString(jwtSecret)
-		if err != nil {
-			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
-			return
-		}
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		http.Error(w, "Token generation failed", http.StatusInternalServerError)
+		return
+	}
 
-		// Send single JSON response
-		w.Header().Set("Content-Type", "application/json")
-		response := map[string]string{
-			"status":  "ok",
-			"message": "Login successful!",
-			"token":   tokenString,
-		}
-		json.NewEncoder(w).Encode(response)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    tokenString,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   false, // set true in HTTPS
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   3600,
+	})
 
-	} else {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":  "ok",
+		"message": "Login successful!",
+	})} else {
 		http.Error(w, "Failed to send response", http.StatusInternalServerError)
 		return
 	}

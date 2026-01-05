@@ -1,20 +1,49 @@
-
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Local File Downlod </title>
-</head>
-<body>
+<html lang="en">
 
-    <h2>Enter your details</h2>
-    <form action="/login" method="post">
+<head>
+    <meta charset="UTF-8">
+    <title>Local File Downloading</title>
+</head>
+
+<body>
+    <h2>Enter your UDitya+sonu</h2>
+    <form id="loginform">
         <label for="rollnumber">Roll Number:</label>
-        <input type="text" id="rollnumber" name="RollNo" required><br><br>
+        <input type="text" id="rollnumber" name="rollnumber" required><br><br>
 
         <label for="department">Department:</label>
-        <input type="text" id="department" name="Department" required><br><br>
+        <input type="text" id="department" name="department" required><br><br>
 
         <input type="submit" value="Submit">
     </form>
+
+<script>
+
+    const form = document.getElementById('loginform');
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const RollNo = document.getElementById("rollnumber").value;
+        const Department = document.getElementById("department").value;
+
+        const res = await fetch("/login", {
+            method: "POST",
+            credentials: "include",   
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `RollNo=${encodeURIComponent(RollNo)}&Department=${encodeURIComponent(Department)}`
+        });
+
+        if (res.ok) {
+            window.location.href = "/files";
+        } else {
+            alert("Login failed");
+        }
+    });
+</script>
 </body>
+
 </html>
